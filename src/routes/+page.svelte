@@ -37,7 +37,7 @@
         class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2"
     >
         {#each notes as note, i}
-            {#if i <= maxLoad}
+            {#if i < maxLoad}
                 <button
                     on:click={() => goto(`/note/${note.id}`)}
                     class="card p-3 break-words overflow-hidden h-40 flex flex-col text-justify"
@@ -50,8 +50,10 @@
             {/if}
         {/each}
     </div>
-    <button
-        on:click={() => (maxLoad += 20)}
-        class="btn variant-filled w-min place-self-center">Load more</button
-    >
+    {#if maxLoad < notes.length}
+        <button
+            on:click={() => (maxLoad += 20)}
+            class="btn variant-filled w-min place-self-center">Load more</button
+        >
+    {/if}
 </div>

@@ -28,7 +28,12 @@
     }
 </script>
 
-<textarea bind:value={content}></textarea>
-{#if content == savedContent}
-    <p>Saved</p>
-{/if}
+<div class="w-full p-3">
+    <textarea
+        bind:value={content}
+        class="w-full min-h-[60vh] bg-transparent p-3 border-2"
+    ></textarea>
+    {#if content == savedContent}
+        <p>Saved</p>
+    {/if}
+</div>
