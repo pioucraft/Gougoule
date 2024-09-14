@@ -21,7 +21,7 @@
     }
 </script>
 
-<button on:click={create}>Create note</button>
+<button on:click={create} class="btn variant-filled">Create note</button>
 
 {#each notes.data as note}
     <button on:click={() => goto(`/note/${note.id}`)}>
