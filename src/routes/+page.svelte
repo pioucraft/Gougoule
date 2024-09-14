@@ -3,7 +3,9 @@
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
 
-    let notes = { data: [] };
+    let notes = [];
+    let maxLoad = 20;
+
     async function create() {
         const { data } = await supabase.auth.getUser();
         console.log(data);
@@ -16,16 +18,40 @@
     });
 
     async function load() {
-        notes = await supabase.from("Notes").select();
-        console.log(notes.data);
+        notes = (await supabase.from("Notes").select()).data;
+        notes = notes.sort((a, b) => {
+            return (
+                new Date(b.created_at).getTime() -
+                new Date(a.created_at).getTime()
+            );
+        });
     }
 </script>
 
-<button on:click={create} class="btn variant-filled">Create note</button>
+<div class="flex flex-col p-3 gap-3">
+    <button on:click={create} class="btn variant-filled w-min mb-3 mt-3"
+        >Create note</button
+    >
 
-{#each notes.data as note}
-    <button on:click={() => goto(`/note/${note.id}`)}>
-        <p>{new Date(note.created_at).toLocaleString()}</p>
-        <p>{note.content}</p>
-    </button>
-{/each}
+    <div
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2"
+    >
+        {#each notes as note, i}
+            {#if i <= maxLoad}
+                <button
+                    on:click={() => goto(`/note/${note.id}`)}
+                    class="card p-3 break-words overflow-hidden h-40 flex flex-col text-justify"
+                >
+                    <p class="text-lg mb-5">
+                        {new Date(note.created_at).toLocaleString()}
+                    </p>
+                    <p>{note.content}</p>
+                </button>
+            {/if}
+        {/each}
+    </div>
+    <button
+        on:click={() => (maxLoad += 20)}
+        class="btn variant-filled w-min place-self-center">Load more</button
+    >
+</div>
