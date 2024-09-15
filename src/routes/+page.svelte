@@ -40,12 +40,12 @@
             {#if i < maxLoad}
                 <button
                     on:click={() => goto(`/note/${note.id}`)}
-                    class="card p-3 break-words overflow-hidden h-40 flex flex-col text-justify"
+                    class="card p-3 break-words overflow-hidden flex flex-col text-justify"
                 >
                     <p class="text-lg mb-5">
                         {new Date(note.created_at).toLocaleString()}
                     </p>
-                    <p>{note.content}</p>
+                    <p class="w-full h-22">{note.content}</p>
                 </button>
             {/if}
         {/each}
