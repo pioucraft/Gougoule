@@ -45,7 +45,7 @@
                     <p class="text-lg mb-5">
                         {new Date(note.created_at).toLocaleString()}
                     </p>
-                    <p class="w-full h-22">{note.content}</p>
+                    <p class="w-full h-[5.5em]">{note.content}</p>
                 </button>
             {/if}
         {/each}
