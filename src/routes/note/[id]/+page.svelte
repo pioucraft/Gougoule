@@ -1,6 +1,7 @@
 <script>
     import { onMount } from "svelte";
     import { supabase } from "$lib/supabase";
+    import { goto } from "$app/navigation";
 
     export let data;
 
@@ -38,16 +39,34 @@
         textarea.style.height = "auto";
         textarea.style.height = textarea.scrollHeight + "px";
     }
+
+    async function done() {
+        await save();
+        goto("/");
+    }
 </script>
 
-<div class="w-full p-3">
+<div class="w-full p-5">
+    <div
+        class="border-b-2 p-3 fixed w-full left-0 top-0 justify-between flex bg-surface-50-900-token"
+    >
+        <p class="btn variant-filled w-24">
+            {#if content == savedContent}
+                Saved
+            {:else}
+                Not saved
+            {/if}
+        </p>
+        <button on:click={done} href="/" class="btn variant-glass-tertiary"
+            >Done</button
+        >
+    </div>
+
     <textarea
         id="textarea"
+        placeholder="Type here..."
         bind:value={content}
-        class="w-full bg-transparent p-3 border-2 resize-none"
+        class="w-full bg-transparent resize-none min-h-[80vh] mt-20 outline-none"
         on:input={autoResize}
     ></textarea>
-    {#if content == savedContent}
-        <p>Saved</p>
-    {/if}
 </div>

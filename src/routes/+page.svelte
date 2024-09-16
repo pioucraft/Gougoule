@@ -11,6 +11,7 @@
         console.log(data);
         await supabase.from("Notes").insert({ user_id: data.user.id });
         await load();
+        await loadLatestNote();
     }
 
     onMount(async () => {
@@ -25,6 +26,10 @@
                 new Date(a.created_at).getTime()
             );
         });
+    }
+
+    async function loadLatestNote() {
+        goto("/note/" + notes[0].id);
     }
 </script>
 
