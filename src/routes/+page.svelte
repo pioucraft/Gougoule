@@ -2,8 +2,13 @@
     import { supabase } from "$lib/supabase";
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
+    import { getModalStore } from "@skeletonlabs/skeleton";
+
+    const modalStore = getModalStore();
 
     let notes = [];
+    let searchedNotes = [];
+    let isSearching = false;
     let maxLoad = 20;
 
     async function create() {
@@ -31,10 +36,41 @@
     async function loadLatestNote() {
         goto("/note/" + notes[0].id);
     }
+
+    async function search() {
+        if (isSearching) {
+            isSearching = false;
+            return;
+        }
+
+        const modal = {
+            type: "prompt",
+            title: "Search",
+            valueAttr: {
+                type: "text",
+                maxlength: 50,
+                required: true,
+            },
+            response: async (r) => {
+                if (r) {
+                    isSearching = true;
+                    searchedNotes = (
+                        await supabase
+                            .from("Notes")
+                            .select()
+                            .textSearch("content", r)
+                    ).data;
+                }
+            },
+        };
+        modalStore.trigger(modal);
+    }
 </script>
 
 <div class="flex flex-col p-3 gap-3 mt-3">
-    <div class="flex justify-between">
+    <div
+        class="flex justify-between fixed bg-surface-50-900-token w-full top-0 left-0 p-3"
+    >
         <button on:click={create} class="btn variant-filled w-min"
             >Create note</button
         >
@@ -55,29 +91,46 @@
                     />
                 </svg>
             </button>
-            <button class="btn-icon variant-filled"
-                ><svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    class="size-6"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-                    />
-                </svg>
+            <button on:click={search} class="btn-icon variant-filled">
+                {#if !isSearching}
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        class="size-6"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                        />
+                    </svg>
+                {:else}
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        class="size-6"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M6 18 18 6M6 6l12 12"
+                        />
+                    </svg>
+                {/if}
             </button>
         </div>
     </div>
 
     <div
-        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2 mt-3"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2 mt-20"
     >
-        {#each notes as note, i}
+        {#each isSearching ? searchedNotes : notes as note, i}
             {#if i < maxLoad}
                 <button
                     on:click={() => goto(`/note/${note.id}`)}

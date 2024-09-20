@@ -3,7 +3,13 @@
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
     import "../app.css";
-    import { autoModeWatcher } from "@skeletonlabs/skeleton";
+    import {
+        initializeStores,
+        Modal,
+        autoModeWatcher,
+    } from "@skeletonlabs/skeleton";
+
+    initializeStores();
 
     onMount(async () => {
         autoModeWatcher();
@@ -11,5 +17,7 @@
         if (error) goto("/login");
     });
 </script>
+
+<Modal />
 
 <slot />
