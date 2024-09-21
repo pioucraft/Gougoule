@@ -42,14 +42,14 @@
 
     async function done() {
         await save();
-        const embedding = await supabase.functions.invoke("embed", {
+        const embedding = await supabase.functions.invoke("embedding", {
             body: { input: savedContent },
         });
         if (embedding.error) {
             alert(embedding.error);
             return;
         }
-        console.log(Array.from(embedding.data.embedding));
+        console.log(embedding.data.embedding);
         await supabase
             .from("Notes")
             .update({ vector: embedding.data.embedding })

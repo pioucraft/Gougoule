@@ -1,9 +1,13 @@
 //@ts-nocheck
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { corsHeaders } from "../_shared/cors.ts";
 
 const session = new Supabase.ai.Session("gte-small");
 
 Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
   // Extract input string from JSON body
   const { input } = await req.json();
 
@@ -15,11 +19,6 @@ Deno.serve(async (req) => {
 
   // Return the embedding
   return new Response(JSON.stringify({ embedding }), {
-    headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-    },
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
 });
