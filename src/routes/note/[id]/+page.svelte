@@ -42,7 +42,19 @@
 
     async function done() {
         await save();
-        goto("/");
+        const embedding = await supabase.functions.invoke("embed", {
+            body: { input: savedContent },
+        });
+        if (embedding.error) {
+            alert("Error while integrating the note with AI !");
+            return;
+        }
+        console.log(Array.from(embedding.data.embedding));
+        await supabase
+            .from("Notes")
+            .update({ vector: embedding.data.embedding })
+            .eq("id", Number(data.id)),
+            goto("/");
     }
 </script>
 
