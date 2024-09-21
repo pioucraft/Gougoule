@@ -46,7 +46,7 @@
             body: { input: savedContent },
         });
         if (embedding.error) {
-            alert("Error while integrating the note with AI !");
+            alert(embedding.error);
             return;
         }
         console.log(Array.from(embedding.data.embedding));
